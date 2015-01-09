@@ -3,11 +3,11 @@
 --Maintained by Dratéjinn
 
 
---local variabels
+--local variables
 local name = ""
 local rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile
 local index = 0
---end local variabels
+--end local variables
 
 local frame = CreateFrame("FRAME", "HappyPeopleFrame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
