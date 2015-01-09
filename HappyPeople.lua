@@ -7,54 +7,103 @@
 local name = ""
 local rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile
 local index = 0
+local flag = 0 --guild roster update event
+local debug = false
 --end local variables
 
-local frame = CreateFrame("FRAME", "HappyPeopleFrame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+print("Freek is Awesome!")
+print("als er fouten zijn in deze Add-on bel me ff!")
 
+local frame = CreateFrame("FRAME", "HappyPeopleFrame")
+frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("GUILD_ROSTER_UPDATE")
 
 local function eventHandler(self, event, ...)
 
-	print("Freek is Awesome!")
-	print("als er fouten zijn in deze Add-on bel me ff!")
-	local playerName = UnitName("player")
-	while name ~= playerName do
-	  	index = index + 1
-		name, rank, rankIndex, level, class, zone, note, 
-	  	officernote, online, status, classFileName, 
-	  	achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(index);
-
-	  	name = tokenizer(name, "-")
-	end
-
-
-	if CanEditPublicNote() then
-		local overall, equipped = GetAverageItemLevel()
-		if (string.find(note, "%d%d%d") ~= nil) then
-			local saveString = string.gsub(note, "%d%d%d", math.floor(overall))
-			GuildRosterSetPublicNote(index, saveString)
-		else
-			GuildRosterSetPublicNote(index, note .. " - iLvl:" .. math.floor(overall))
+	if event == "PLAYER_ENTERING_WORLD" then
+		GuildRoster() --request data to make sure we are updating
+		flag = 0
+		HPDebugPrint("Player entered world update for guildroster requested!")
+	elseif event == "GUILD_ROSTER_UPDATE" then
+		if flag == 0 then
+			flag = 1
+			HPDebugPrint("Getting new Data!")
+			HPgetPlayerData()
 		end
-	else
-		print("cannot set public note!")
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+		if flag == 1 then
+			HPDebugPrint("equipment changed requesting update!")
+			HPgetPlayerData()
+		else
+			HPDebugPrint("equipment changed requesting new guildroster info!")
+			GuildRoster()
+		end
 	end
-
-
 end
 
 frame:SetScript("OnEvent", eventHandler)
 
 
+function HPgetPlayerData()
 
-function tokenizer(string, delim)
+	if IsInGuild() then
+		
+		local playerName = UnitName("player")
+		local dataValid = true
+		index = 0
+		name = nil
+		while name ~= playerName and dataValid == true do
+		  	index = index + 1
+			name, rank, rankIndex, level, class, zone, note, 
+		  	officernote, online, status, classFileName, 
+		  	achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(index)
+		  	if name ~= nil then
+		  		name = HPtokenizer(name, "-")
+		  		HPDebugPrint("Index= "..index)
+		  	else
+		  		dataValid = false
+		  		flag = 0
+		  		HPDebugPrint("No valid data!")
+		  	end
+		end
+		if CanEditPublicNote() then
+			if dataValid == true then
+				local overall, equipped = GetAverageItemLevel()
+				if (string.find(note, "%d%d%d") ~= nil) then
+					HPDebugPrint("updating ilvl data!")
+					local saveString = string.gsub(note, "%d%d%d", math.floor(overall))
+					GuildRosterSetPublicNote(index, saveString)
+				else
+					HPDebugPrint("setting ilvl data! and index= "..index )
+					GuildRosterSetPublicNote(index, note .. " - iLvl:" .. math.floor(overall))
+				end
+			else
+				HPDebugPrint("Datavalid is false!")
+			end
+		else
+			HPDebugPrint("cannot set public note!")
+		end
+	end
+
+end
+
+
+function HPtokenizer(string, delim)
 	if (string ~= nil and delim ~= nil) then
 		local i= string.find(string, delim)
 		if i == nil then
-			print("Error : no delim char found!")
+			HPDebugPrint("Error : no delim char found!")
 			return string
 		else
+			-- print(string.sub(string, 1, i - 1))
 			return string.sub(string, 1, i - 1)
 		end
+	end
+end
+
+function HPDebugPrint(str)
+	if debug == true then
+		print(str)
 	end
 end
