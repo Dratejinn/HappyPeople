@@ -4,7 +4,7 @@
 
 
 --local variables
-local version = "0.5a"
+local version = "0.6"
 local name = ""
 local rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile
 local index = 0
