@@ -4,6 +4,7 @@
 
 
 --local variables
+local version = "0.5a"
 local name = ""
 local rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile
 local index = 0
@@ -11,9 +12,7 @@ local flag = 0 --guild roster update event
 local debug = false
 --end local variables
 
-print("Freek is Awesome!")
-print("als er fouten zijn in deze Add-on bel me ff!")
-
+print("|cFF4169E1Happy People|r Version: |cFF4169E1".. version.. "|r loaded!")
 local frame = CreateFrame("FRAME", "HappyPeopleFrame")
 frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -76,7 +75,14 @@ function HPgetPlayerData()
 					GuildRosterSetPublicNote(index, saveString)
 				else
 					HPDebugPrint("setting ilvl data! and index= "..index )
-					GuildRosterSetPublicNote(index, note .. " - iLvl:" .. math.floor(overall))
+					if (string.len(note) < 22) then
+						note = note .. " - ilvl:" .. math.floor(overall)
+					elseif (string.len(note) < 29) then
+						note = note .. " " .. math.floor(overall)
+					else
+						print("Can't update note because the note is too full!")
+					end
+					GuildRosterSetPublicNote(index, note)
 				end
 			else
 				HPDebugPrint("Datavalid is false!")
