@@ -1,5 +1,5 @@
 ## Interface: 60000
 ## Title: Happy People i-lvl
 ## Notes: stay happy!
-## Version: 0.6
+## Version: 0.7
 HappyPeople.lua

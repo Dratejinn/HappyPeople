@@ -4,7 +4,7 @@
 
 
 --local variables
-local version = "0.6"
+local version = "0.7"
 local name = ""
 local rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile
 local index = 0
@@ -69,9 +69,9 @@ function HPgetPlayerData()
 		if CanEditPublicNote() then
 			if dataValid == true then
 				local overall, equipped = GetAverageItemLevel()
-				if (string.find(note, "%d%d%d") ~= nil) then
+				if (string.find(note, "[%d]+") ~= nil) then
 					HPDebugPrint("updating ilvl data!")
-					local saveString = string.gsub(note, "%d%d%d", math.floor(overall))
+					local saveString = string.gsub(note, "[%d]+", math.floor(overall))
 					GuildRosterSetPublicNote(index, saveString)
 				else
 					HPDebugPrint("setting ilvl data! and index= "..index )
